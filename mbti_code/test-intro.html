@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI性格测试 - 测试页面</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 测试页面特定样式 */
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-header h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .test-header p {
+            color: #666;
+        }
+        
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #3B7CFF;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option-item {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-item:hover {
+            border-color: #3B7CFF;
+            background-color: #f0f7ff;
+        }
+        
+        .option-item.selected {
+            border-color: #3B7CFF;
+            background-color: #f0f7ff;
+        }
+        
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .option-item.selected .option-radio {
+            border-color: #3B7CFF;
+        }
+        
+        .option-item.selected .option-radio:after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #3B7CFF;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .option-text {
+            flex: 1;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn-nav {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-prev {
+            background-color: #f0f0f0;
+            color: #666;
+            border: none;
+        }
+        
+        .btn-prev:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-prev:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-next {
+            background-color: #3B7CFF;
+            color: white;
+            border: none;
+        }
+        
+        .btn-next:hover {
+            background-color: #2a5ab3;
+        }
+        
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-intro, .test-questions {
+            display: block;
+        }
+        
+        .intro-content {
+            margin-bottom: 30px;
+        }
+        
+        .intro-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .intro-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #666;
+        }
+        
+        .intro-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .intro-content ul li {
+            margin-bottom: 8px;
+            color: #666;
+        }
+        
+        .start-button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        /* 加载动画 */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3B7CFF;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 576px) {
+            .test-container {
+                padding: 20px 15px;
+            }
+            
+            .test-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .option-item {
+                padding: 12px;
+            }
+            
+            .navigation-buttons {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">跳到主要内容</a>
+    
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>MBTI性格测试</h1>
+                <p>探索你的性格类型</p>
+            </div>
+            <nav id="main-nav">
+                <button id="menu-toggle" aria-label="菜单">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="test-intro.html" class="active">开始测试</a></li>
+                    <li><a href="docs/architecture.html">技术文档</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>MBTI性格测试</h2>
+                    <p>了解自己的性格类型，发现你的优势和潜能</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="test-section">
+            <div class="container">
+                <div class="test-container">
+                    <!-- 测试介绍页 -->
+                    <div class="test-intro">
+                        <div class="test-header">
+                            <h2>MBTI性格测试</h2>
+                            <p>了解自己的性格类型，发现你的优势和潜能</p>
+                        </div>
+                        
+                        <div class="intro-content">
+                            <h3>什么是MBTI测试？</h3>
+                            <p>MBTI(迈尔斯-布里格斯类型指标)是一种基于荣格类型学说的性格测试，通过测量人在四个维度上的偏好，将人分为16种不同的性格类型：</p>
+                            <ul>
+                                <li><strong>E/I（外向/内向）</strong>：关注你获取能量的方式</li>
+                                <li><strong>S/N（感觉/直觉）</strong>：关注你获取信息的方式</li>
+                                <li><strong>T/F（思考/情感）</strong>：关注你做决定的方式</li>
+                                <li><strong>J/P（判断/知觉）</strong>：关注你处理外部世界的方式</li>
+                            </ul>
+                            <p>通过这四个维度的组合，形成了INTJ、ENFP等16种不同的性格类型。</p>
+                        </div>
+                        
+                        <div class="intro-content">
+                            <h3>测试说明</h3>
+                            <p>本测试包含93道标准MBTI题目，每题采用5点量表（从"强烈同意"到"强烈不同意"）。</p>
+                            <p>测试提示：</p>
+                            <ul>
+                                <li>请根据你的真实想法回答，没有对错之分</li>
+                                <li>选择最符合你一贯行为方式的选项，而非特定情境下的反应</li>
+                                <li>不要过度思考每个问题，选择你的第一反应</li>
+                                <li>测试大约需要15-20分钟完成</li>
+                                <li>完成测试后，你将获得详细的性格分析报告</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="start-button-container">
+                            <a href="test-question.html" class="btn primary">开始测试</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>MBTI性格测试</h2>
+                    <p>探索你的性格类型</p>
+                </div>
+                <div class="footer-links">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="test-intro.html">开始测试</a></li>
+                        <li><a href="docs/architecture.html">技术文档</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>联系我们</h3>
+                    <p><i class="fas fa-envelope"></i> contact@mbtitest.com</p>
+                    <p><i class="fas fa-globe"></i> www.mbtitest.com</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="微信"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MBTI性格测试. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

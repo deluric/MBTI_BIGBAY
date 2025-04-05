@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI性格测试 - 测试问题</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 测试页面特定样式 */
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-header h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .test-header p {
+            color: #666;
+        }
+        
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #3B7CFF;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option-item {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-item:hover {
+            border-color: #3B7CFF;
+            background-color: #f0f7ff;
+        }
+        
+        .option-item.selected {
+            border-color: #3B7CFF;
+            background-color: #f0f7ff;
+        }
+        
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .option-item.selected .option-radio {
+            border-color: #3B7CFF;
+        }
+        
+        .option-item.selected .option-radio:after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #3B7CFF;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .option-text {
+            flex: 1;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn-nav {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-prev {
+            background-color: #f0f0f0;
+            color: #666;
+            border: none;
+        }
+        
+        .btn-prev:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-prev:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-next {
+            background-color: #3B7CFF;
+            color: white;
+            border: none;
+        }
+        
+        .btn-next:hover {
+            background-color: #2a5ab3;
+        }
+        
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 加载动画 */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3B7CFF;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 576px) {
+            .test-container {
+                padding: 20px 15px;
+            }
+            
+            .test-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .option-item {
+                padding: 12px;
+            }
+            
+            .navigation-buttons {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">跳到主要内容</a>
+    
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>MBTI性格测试</h1>
+                <p>探索你的性格类型</p>
+            </div>
+            <nav id="main-nav">
+                <button id="menu-toggle" aria-label="菜单">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="test-intro.html">开始测试</a></li>
+                    <li><a href="docs/architecture.html">技术文档</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section class="test-section">
+            <div class="container">
+                <div class="test-container">
+                    <!-- 测试题目页 -->
+                    <div class="test-questions">
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span id="question-progress">问题 1/93</span>
+                                <span id="time-remaining">预计剩余时间: 20分钟</span>
+                            </div>
+                        </div>
+                        
+                        <div class="question-container">
+                            <div class="question-text" id="question-text">
+                                <!-- 问题文本将通过JavaScript动态插入 -->
+                            </div>
+                            
+                            <div class="options-container">
+                                <div class="option-item" data-value="5">
+                                    <div class="option-radio"></div>
+                                    <div class="option-text">强烈同意</div>
+                                </div>
+                                <div class="option-item" data-value="4">
+                                    <div class="option-radio"></div>
+                                    <div class="option-text">部分同意</div>
+                                </div>
+                                <div class="option-item" data-value="3">
+                                    <div class="option-radio"></div>
+                                    <div class="option-text">中立</div>
+                                </div>
+                                <div class="option-item" data-value="2">
+                                    <div class="option-radio"></div>
+                                    <div class="option-text">部分不同意</div>
+                                </div>
+                                <div class="option-item" data-value="1">
+                                    <div class="option-radio"></div>
+                                    <div class="option-text">强烈不同意</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="navigation-buttons">
+                            <button id="prev-question" class="btn-nav btn-prev" disabled>上一题</button>
+                            <button id="next-question" class="btn-nav btn-next" disabled>下一题</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 加载中状态 -->
+                    <div class="loading-container" id="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">正在计算你的MBTI类型...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>MBTI性格测试</h2>
+                    <p>探索你的性格类型</p>
+                </div>
+                <div class="footer-links">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="test-intro.html">开始测试</a></li>
+                        <li><a href="docs/architecture.html">技术文档</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>联系我们</h3>
+                    <p><i class="fas fa-envelope"></i> contact@mbtitest.com</p>
+                    <p><i class="fas fa-globe"></i> www.mbtitest.com</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="微信"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MBTI性格测试. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // 导入题库
+        import questions from './js/questions.js';
+        
+        // 全局变量
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let startTime = null;
+
+        // DOM元素
+        const questionsSection = document.querySelector('.test-questions');
+        const loadingContainer = document.getElementById('loading-container');
+        const prevQuestionButton = document.getElementById('prev-question');
+        const nextQuestionButton = document.getElementById('next-question');
+        const questionText = document.getElementById('question-text');
+        const questionProgress = document.getElementById('question-progress');
+        const timeRemaining = document.getElementById('time-remaining');
+        const progressFill = document.getElementById('progress-fill');
+        const optionItems = document.querySelectorAll('.option-item');
+
+        // 初始化
+        function init() {
+            // 绑定事件
+            prevQuestionButton.addEventListener('click', showPreviousQuestion);
+            nextQuestionButton.addEventListener('click', showNextQuestion);
+            
+            optionItems.forEach(item => {
+                item.addEventListener('click', () => selectOption(item));
+            });
+            
+            // 初始化答案数组
+            answers = new Array(questions.length).fill(null);
+            
+            // 尝试从本地存储恢复进度
+            const savedProgress = localStorage.getItem('mbtiTestProgress');
+            if (savedProgress) {
+                try {
+                    const progress = JSON.parse(savedProgress);
+                    if (progress.answers && progress.answers.length === questions.length) {
+                        answers = progress.answers;
+                        currentQuestionIndex = progress.currentIndex || 0;
+                        startTime = new Date(progress.startTime) || new Date();
+                    } else {
+                        startTime = new Date();
+                    }
+                } catch (e) {
+                    console.error('恢复进度失败:', e);
+                    startTime = new Date();
+                }
+            } else {
+                startTime = new Date();
+            }
+            
+            // 显示第一个问题
+            showQuestion(currentQuestionIndex);
+            
+            // 定期保存进度
+            setInterval(saveProgress, 10000); // 每10秒保存一次
+        }
+
+        // 保存进度到本地存储
+        function saveProgress() {
+            const progress = {
+                answers: answers,
+                currentIndex: currentQuestionIndex,
+                startTime: startTime.toISOString()
+            };
+            localStorage.setItem('mbtiTestProgress', JSON.stringify(progress));
+        }
+
+        // 显示问题
+        function showQuestion(index) {
+            currentQuestionIndex = index;
+            
+            // 更新问题文本
+            questionText.textContent = questions[index].content;
+            
+            // 更新进度
+            questionProgress.textContent = `问题 ${index + 1}/${questions.length}`;
+            progressFill.style.width = `${((index + 1) / questions.length) * 100}%`;
+            
+            // 更新剩余时间
+            updateRemainingTime();
+            
+            // 更新选项状态
+            updateOptionSelection();
+            
+            // 更新导航按钮状态
+            prevQuestionButton.disabled = index === 0;
+            nextQuestionButton.disabled = answers[index] === null;
+            
+            // 如果是最后一个问题，更改下一题按钮文本
+            if (index === questions.length - 1) {
+                nextQuestionButton.textContent = '查看结果';
+            } else {
+                nextQuestionButton.textContent = '下一题';
+            }
+        }
+
+        // 更新剩余时间
+        function updateRemainingTime() {
+            if (!startTime) return;
+            
+            const now = new Date();
+            const elapsedSeconds = Math.floor((now - startTime) / 1000);
+            const answeredQuestions = answers.filter(a => a !== null).length;
+            
+            if (answeredQuestions === 0) return;
+            
+            const secondsPerQuestion = elapsedSeconds / answeredQuestions;
+            const remainingQuestions = questions.length - answeredQuestions;
+            const estimatedRemainingSeconds = Math.floor(secondsPerQuestion * remainingQuestions);
+            
+            let remainingText = '';
+            if (estimatedRemainingSeconds < 60) {
+                remainingText = `${estimatedRemainingSeconds}秒`;
+            } else {
+                const minutes = Math.floor(estimatedRemainingSeconds / 60);
+                remainingText = `${minutes}分钟`;
+            }
+            
+            timeRemaining.textContent = `预计剩余时间: ${remainingText}`;
+        }
+
+        // 选择选项
+        function selectOption(selectedItem) {
+            const value = parseInt(selectedItem.dataset.value);
+            answers[currentQuestionIndex] = value;
+            
+            // 更新选项状态
+            updateOptionSelection();
+            
+            // 启用下一题按钮
+            nextQuestionButton.disabled = false;
+            
+            // 保存进度
+            saveProgress();
+        }
+
+        // 更新选项选中状态
+        function updateOptionSelection() {
+            const currentAnswer = answers[currentQuestionIndex];
+            
+            optionItems.forEach(item => {
+                const itemValue = parseInt(item.dataset.value);
+                if (itemValue === currentAnswer) {
+                    
+(Content truncated due to size limit. Use line ranges to read in chunks)

@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI性格测试 - 测试结果</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        /* 结果页面特定样式 */
+        .result-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .result-type {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #3B7CFF;
+            margin-bottom: 10px;
+        }
+        
+        .result-name {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .radar-chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 0 auto 40px;
+            position: relative;
+            display: block;
+            clear: both;
+        }
+        
+        .result-description {
+            text-align: left;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 30px;
+            clear: both;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .result-tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .result-tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .result-tab:hover {
+            color: #3B7CFF;
+        }
+        
+        .result-tab.active {
+            color: #3B7CFF;
+            border-bottom-color: #3B7CFF;
+        }
+        
+        .result-section {
+            display: block;
+            margin-bottom: 40px;
+        }
+        
+        .result-section h3 {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #444;
+        }
+        
+        .cognitive-functions {
+            margin-bottom: 30px;
+        }
+        
+        .function-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .function-name {
+            font-weight: 600;
+            width: 100px;
+            color: #333;
+        }
+        
+        .function-description {
+            flex: 1;
+            color: #444;
+        }
+        
+        .celebrities-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .celebrity-item {
+            width: calc(33.33% - 14px);
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .celebrity-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .celebrity-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .strengths-weaknesses {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .strengths, .weaknesses {
+            flex: 1;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .strengths {
+            background-color: #f0f7ff;
+        }
+        
+        .weaknesses {
+            background-color: #fff0f0;
+        }
+        
+        .strengths h4, .weaknesses h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .strengths ul, .weaknesses ul {
+            padding-left: 20px;
+        }
+        
+        .strengths li, .weaknesses li {
+            margin-bottom: 10px;
+            color: #444;
+        }
+        
+        .tips-container {
+            margin-bottom: 30px;
+        }
+        
+        .tip-item {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tip-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .tip-content {
+            color: #444;
+        }
+        
+        .strategy-container {
+            margin-bottom: 30px;
+        }
+        
+        .strategy-item {
+            margin-bottom: 20px;
+        }
+        
+        .strategy-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .strategy-content {
+            color: #444;
+            line-height: 1.6;
+        }
+        
+        .compatible-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .compatible-type {
+            padding: 10px 15px;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #3B7CFF;
+        }
+        
+        .restart-button-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .share-container {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .share-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .share-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .share-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .share-wechat {
+            background-color: #07C160;
+        }
+        
+        .share-weibo {
+            background-color: #E6162D;
+        }
+        
+        .share-twitter {
+            background-color: #1DA1F2;
+        }
+        
+        /* 学业、职业、爱情板块特定样式 */
+        .advice-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #3B7CFF;
+            margin: 50px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .advice-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .advice-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3B7CFF;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .advice-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .advice-content {
+            padding-left: 55px;
+        }
+        
+        .advice-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* 避免劣势的策略卡片特殊样式 */
+        .weaknesses-card {
+            background-color: #ffe6e6; /* 粉红色背景 */
+        }
+        
+        .advice-card-title {
+            font-weight: 600;
+            color: #3B7CFF;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .advice-card-title i {
+            margin-right: 10px;
+        }
+        
+        .advice-card-content {
+            color: #444;
+            line-height: 1.6;
+        }
+        
+        .advice-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .advice-list li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 12px;
+            color: #444;
+        }
+        
+        .advice-list li:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #3B7CFF;
+        }
+        
+        .advice-warning {
+            background-color: #fff0f0;
+            border-left: 4px solid #ff3b3b;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        
+        .advice-tip {
+            background-color: #f0f7ff;
+            border-left: 4px solid #3B7CFF;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .strengths-weaknesses {
+                flex-direction: column;
+            }
+            
+            .celebrity-item {
+                width: 100%;
+            }
+            
+            .result-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .result-tab {
+                padding: 15px 15px;
+            }
+        }
+        
+        /* 返回顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3B7CFF;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        
+        /* 保存结果按钮样式 */
+        .save-result-btn {
+            display: block;
+            width: 180px;
+            height: 50px;
+            margin: 40px auto;
+            background-color: #3B7CFF;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .save-result-btn:hover {
+            background-color: #2a5bc8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-result-btn i {
+            margin-right: 8px;
+        }
+        
+        /* 生成图片时的加载动画 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3B7CFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">跳到主要内容</a>
+    
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>MBTI性格测试</h1>
+                <p>探索你的性格类型</p>
+            </div>
+            <nav id="main-nav">
+                <button id="menu-toggle" aria-label="菜单">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="test-intro.html">开始测试</a></li>
+                    <li><a href="docs/architecture.html">技术文档</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section class="result-section-main">
+            <div class="container">
+                <div class="result-container">
+                    <div class="result-header">
+                        <div class="result-type" id="result-type">INTJ</div>
+                        <div class="result-name" id="result-name">建筑师</div>
+                    </div>
+                    
+                    <div class="radar-chart-container">
+                        <canvas id="radar-chart"></canvas>
+                    </div>
+                    
+                    <div class="result-description" id="result-description">
+                        <!-- 性格描述将通过JavaScript动态插入 -->
+                    </div>
+                    
+                    <div class="result-tabs">
+                        <div class="result-tab active" data-tab="overview">概览</div>
+                        <div class="result-tab" data-tab="academic">学业发展</div>
+                        <div class="result-tab" data-tab="career">职业发展</div>
+                        <div class="result-tab" data-tab="relationship">恋爱关系</div>
+                    </div>
+                    
+                    <!-- 概览部分 -->
+                    <div class="result-section active" id="overview-section">
+                        <h2 class="section-title">性格概览</h2>
+                        <h3>认知功能</h3>
+                        <div class="cognitive-functions" id="cognitive-functions">
+                            <!-- 认知功能将通过JavaScript动态插入 -->
+                        </div>
+                        
+                        <h3>优势与挑战</h3>
+                        <div class="strengths-weaknesses">
+                            <div class="strengths">
+                                <h4>优势</h4>
+                                <ul id="strengths-list">
+                                    <!-- 优势列表将通过JavaScript动态插入 -->
+                                </ul>
+                            </div>
+                            <div class="weaknesses">
+                                <h4>挑战</h4>
+                                <ul id="weaknesses-list">
+                                    <!-- 挑战列表将通过JavaScript动态插入 -->
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h3>同类型名人</h3>
+                        <div class="celebrities-container" id="celebrities-container">
+                            <!-- 名人案例将通过JavaScript动态插入 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 学业发展部分 -->
+                    <div class="result-section" id="academic-section">
+                        <h2 class="section-title">学业发展</h2>
+                        <div class="advice-section">
+                            <div class="advice-header">
+                                <div class="advice-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="advice-title">学习风格与策略</div>
+                            </div>
+                            
+                            <div class="advice-content">
+                                <div class="advice-card">
+                                    <div class="advice-card-title">
+                                        <i class="fas fa-lightbulb"></i>你的学习风格
+                                    </div>
+                                    <div class="advice-card-content" id="learning-style">
+                                        <!-- 学习风格将通过JavaScript动态插入 -->
+                                    </div>
+                                </div>
+                                
+                                <div class="advice-card">
+                                    <div class="advice-card-title">
+                                        <i class="fas fa-check-circle"></i>发挥优势的策略
+                                    </div>
+                                    <ul class="advice-list" id="academic-strengths">
+                                        <!-- 学业优势策略将通过JavaScript动态插入 -->
+                                    </ul>
+                                </div>
+                                
+                                <div class="advice-card weaknesses-card">
+                                    <div class="advice-card-title">
+                                        <i class="fas fa-exclamation-triangle"></i>避免劣势的策略
+                                    </div>
+                                    <ul class="advice-list" id="academic-weaknesses">
+                                        <!-- 学业劣势策略将通过JavaScript动态插入 -->
+                                    </ul>
+                                </div>
+                                
+                                <div class="advice-tip" id="academic-tip">
+                                    <!-- 学业提示将通过JavaScript动态插入 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="advice-section">
+                            <div class="advice-header">
+                                <div class="advice-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="advice-title">适合的学科与专业</div>
+                            </div>
+                            
+                            <div class="advice-content">
+                                <div class="advice-card">
+                                    <div class="advice-card-content" id="suitable-subjects">
+                                        <!-- 适合学科将通过JavaScript动态插入 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 职业发展部分 -->
+                    <div class="result-section" id="career-section">
+                        <h2 class="section-title">职业发展</h2>
+                        <div class="advice-section">
+                            <div class="advice-header">
+                                <div class="advice-icon">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <div class="advice-title">职业发展建议</div>
+                            </div>
+                            
+                            <div class="advice-content">
+                                <div class="advice-card">
+                                    <div class="advice-card-title">
+                                        <i class="fas fa-lightbulb"></i>职业发展方向
+                                    </div>
+                                    <div class="advice-card-content">
+                                        <!-- 职业方向将通过JavaScript动态插入 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 恋爱关系部分 -->
+                    <div class="result-section" id="relationship-section">
+                        <h2 class="section-title">恋爱关系</h2>
+                        <div class="advice-section">
+                            <div class="advice-header">
+                                <div class="advice-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="advice-title">恋爱关系建议</div>
+                            </div>
+                            
+                            <div class="advice-content">
+                                <div class="advice-card">
+                                    <div class="advice-card-title">
+                                        <i class="fas fa-lightbulb"></i>恋爱关系特点
+                                    </div>
+                                    <div class="advice-card-content">
+                                        <!-- 恋爱关系内容将通过JavaScript动态插入 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 保存结果按钮 -->
+                    <button class="save-result-btn" id="save-result-btn">
+                        <i class="fas fa-save"></i> 保存结果
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 返回顶部按钮 -->
+        <div class="back-to-top" id="back-to-top">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>MBTI性格测试</h2>
+                    <p>探索你的性格类型</p>
+                </div>
+                <div class="footer-links">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="test-intro.html">开始测试</a></li>
+                        <li><a href="docs/architecture.html">技术文档</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>联系我们</h3>
+                    <p><i class="fas fa-envelope"></i> contact@mbtitest.com</p>
+                    <p><i class="fas fa-globe"></i> www.mbtitest.com</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="微信"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MBTI性格测试. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在生成图片...</div>
+    </div>
+
+    <script>
+        // 简化的测试数据，用于INTJ类型示例
+        var personalityData = {
+            "INTJ": {
+                "name": "建筑师",
+                "description": "INTJ型人格被称为\"建筑师\"，他们是战略家，擅长通过分析和系统思考来解决复杂问题。他们具有独立性、逻辑性和创新性，总是寻求最有效的方法来实现目标。",
+                "strengthList": [
+                    "出色的战略思考能力",
+                    "善于分析复杂问题",
+                    "独立自主，自我驱动",
+                    "高度创新和原创思维",
+                    "追求知识和不断自我提升"
+                ],
+                "weaknessList": [
+                    "可能显得过于批判或冷漠",
+                    "有时忽视他人情感需求",
+                    "对不合逻辑的事物缺乏耐心",
+                    "过于完美主义",
+                    "可能忽视生活中的社交方面"
+                ],
+                "celebrities": [
+                    { "name": "埃隆·马斯克", "description": "Tesla和SpaceX创始人" },
+                    { "name": "史蒂芬·霍金", "description": "理论物理学家" },
+                    { "name": "弗里德里希·尼采", "description": "哲学家" }
+                ],
+                "academicStyle": "你倾向于独立学习，喜欢研究复杂的理论概念和系统。",
+                "academicStrengths": [
+                    "能够看到学科的整体结构和长期目标",
+                    "出色的独立研究能力"
+                ],
+                "academicWeaknesses": [
+                    "可能与教授或同学的团队合作困难",
+                    "有时忽视细节或实际应用"
+                ],
+                "suitableSubjects": "自然科学、计算机科学、哲学等需要战略思考和系统分析的学科。",
+                "academicTip": "寻找能将你的理论兴趣与实际应用相结合的机会。"
+            },
+            "INTP": {
+                "name": "逻辑学家",
+                "description": "INTP型人格被称为\"逻辑学家\"，他们是创新者和发明家，对逻辑和理论充满热情。他们喜欢分析复杂的问题，寻找模式，并对可能性进行理论化探索。",
+                "strengthList": [
+                    "强大的思考和分析能力",
+                    "丰富的创造力和想象力",
+                    "开放的思维方式",
+                    "对知识的极度渴求",
+                    "对待问题的客观性和公正性"
+                ],
+                "weaknessList": [
+                    "可能过于沉浸在理论中，忽视实际应用",
+                    "社交互动中可能显得冷漠或心不在焉",
+                    "容易拖延或回避日常事务",
+                    "对不感兴趣的话题缺乏耐心",
+                    "有时会过度分析和怀疑"
+                ],
+                "celebrities": [
+                    { "name": "阿尔伯特·爱因斯坦", "description": "理论物理学家" },
+                    { "name": "比尔·盖茨", "description": "微软创始人" },
+                    { "name": "拉里·佩奇", "description": "谷歌联合创始人" }
+                ],
+                "academicStyle": "你享受独立的理论探索，喜欢质疑既有概念并发展自己的理解体系。",
+                "academicStrengths": [
+                    "卓越的抽象思维能力",
+                    "善于识别复杂系统中的逻辑缺陷",
+                    "创新性解决问题的能力"
+                ],
+                "academicWeaknesses": [
+                    "可能难以遵循严格的学习时间表",
+                    "对细节和死记硬背的内容不感兴趣",
+                    "可能忽视不认为重要的课程要求"
+                ],
+                "suitableSubjects": "理论物理、数学、哲学、计算机科学、人工智能等需要抽象思考和创新的领域。",
+                "academicTip": "设定小目标并将大型项目分解为可管理的部分，以克服拖延倾向。"
+            },
+            "ENTJ": {
+                "name": "指挥官",
+                "description": "ENTJ型人格被称为\"指挥官\"，他们是天生的领导者，果断自信，具有战略眼光和组织能力。他们善于制定长期计划并有效地调动资源实现目标。",
+                "strengthList": [
+                    "卓越的领导和组织能力",
+                    "强大的决策能力",
+                    "战略性思维和远见",
+                    "高效率和结果导向",
+                    "直接、坦率的沟通风格"
+                ],
+                "weaknessList": [
+                    "可能显得过于支配或专制",
+                    "有时对他人情感不够敏感",
+                    "对不达标的表现缺乏耐心",
+                    "可能过度工作",
+                    "在处理高度情感化的情况时可能不自在"
+                ],
+                "celebrities": [
+                    { "name": "史蒂夫·乔布斯", "description": "苹果公司联合创始人" },
+                    { "name": "玛格丽特·撒切尔", "description": "前英国首相" },
+                    { "name": "杰克·韦尔奇", "description": "前通用电气CEO" }
+                ],
+                "academicStyle": "你倾向于系统化学习，制定明确的学习目标和战略，偏好结构化的课程和清晰的评估标准。",
+                "academicStrengths": [
+                    "卓越的项目管理和组织能力",
+                    "能够看到学习内容的长期价值和应用",
+                    "积极参与课堂讨论和领导小组项目"
+                ],
+                "academicWeaknesses": [
+                    "可能对主观或缺乏明确标准的学科感到不耐烦",
+                    "有时可能过于主导小组活动",
+                    "可能忽视学习过程中的情感和人际因素"
+                ],
+                "suitableSubjects": "商业管理、法律、政治学、经济学等需要领导力和战略思维的领域。",
+                "academicTip": "尝试在小组活动中倾听和重视其他同学的观点，这将增强你的团队协作能力。"
+            },
+            "ENTP": {
+                "name": "辩论家",
+                "description": "ENTP型人格被称为\"辩论家\"，他们思维敏捷，充满创意，热爱智力挑战。他们善于看到新的可能性，喜欢辩论和质疑常规观念。",
+                "strengthList": [
+                    "出色的创新和创造能力",
+                    "快速学习和适应新概念",
+                    "思维敏捷，擅长辩论",
+                    "对知识的广泛兴趣",
+                    "解决问题的灵活性"
+                ],
+                "weaknessList": [
+                    "可能难以专注于长期项目",
+                    "有时可能过于好辩",
+                    "对日常细节和常规工作不耐烦",
+                    "可能不善于完成已经失去兴趣的任务",
+                    "可能忽视他人情感需求"
+                ],
+                "celebrities": [
+                    { "name": "托马斯·爱迪生", "description": "发明家" },
+                    { "name": "罗伯特·唐尼", "description": "演员" },
+                    { "name": "塞思·麦克法兰", "description": "动画师和制片人" }
+                ],
+                "academicStyle": "你享受跨学科学习，喜欢连接不同领域的概念，并通过辩论和讨论来加深理解。",
+                "academicStrengths": [
+                    "快速掌握新概念和理论",
+                    "创造性地解决问题",
+                    "在讨论和辩论中表现出色"
+                ],
+                "academicWeaknesses": [
+                    "可能对重复性学习任务失去兴趣",
+                    "在需要严格遵循程序的课程中可能感到受限",
+                    "可能在项目完成前转向新的兴趣"
+                ],
+                "suitableSubjects": "企业家精神、市场营销、工程学、创意写作、新闻学等需要创新思维和沟通能力的领域。",
+                "academicTip": "为自己设定明确的截止日期和可衡量的目标，以保持专注并完成重要项目。"
+            },
+            "INFJ": {
+                "name": "提倡者",
+                "description": "INFJ型人格被称为\"提倡者\"，他们充满理想主义和道德感，关注他人福祉和社会正义。他们具有深刻的洞察力，能够看穿表面现象理解人的内心动机。",
+                "strengthList": [
+                    "深刻的洞察力和直觉",
+                    "坚定的价值观和道德标准",
+                    "创造性思维和想象力",
+                    "致力于积极的社会变革",
+                    "深厚的同理心和理解力"
+                ],
+                "weaknessList": [
+                    "过于理想主义，可能不切实际",
+                    "容易情绪过载和精疲力竭",
+                    "对批评可能过于敏感",
+                    "有时难以放手或接受不完美",
+                    "在日常生活中可能显得神秘或难以理解"
+                ],
+                "celebrities": [
+                    { "name": "马丁·路德·金", "description": "民权领袖" },
+                    { "name": "玛丽·居里", "description": "物理学家和化学家" },
+                    { "name": "尼尔森·曼德拉", "description": "政治领袖和反种族隔离活动家" }
+                ],
+                "academicStyle": "你倾向于将学习与个人价值观和更广泛的社会意义联系起来，喜欢深入探索而非浅尝辄止。",
+                "academicStrengths": [
+                    "擅长理解复杂的人类行为和社会体系",
+                    "卓越的写作能力，特别是在表达思想和感受方面",
+                    "能够将抽象概念与实际应用联系起来"
+                ],
+                "academicWeaknesses": [
+                    "可能过于追求完美，导致学习压力增加",
+                    "可能在高度竞争或冷漠的学习环境中感到不适",
+                    "有时难以在小组项目中妥协或放弃自己的愿景"
+                ],
+                "suitableSubjects": "心理学、社会工作、人类学、文学、宗教研究等关注人类体验和社会变革的领域。",
+                "academicTip": "确保在追求学术理想的同时照顾自己的情感健康，适当休息和自我关爱。"
+            },
+            "INFP": {
+                "name": "调停者",
+                "description": "INFP型人格被称为\"调停者\"，他们富有同情心和创造力，重视个人价值观和自我表达。他们寻求和平与和谐，渴望理解人类体验的深层意义。",
+                "strengthList": [
+                    "深厚的同理心和理解力",
+                    "丰富的创造力和想象力",
+                    "强烈的个人道德观念",
+                    "忠于自己的价值观",
+                    "开放性思维和适应性"
+                ],
+                "weaknessList": [
+                    "过度理想化，可能不切实际",
+                    "可能过于内敛，难以表达需求",
+                    "对批评特别敏感",
+                    "可能忽视日常现实和细节",
+                    "可能有困难做出艰难决定"
+                ],
+                "celebrities": [
+                    { "name": "威廉·莎士比亚", "description": "剧作家和诗人" },
+                    { "name": "J.R.R.托尔金", "description": "作家，《魔戒》作者" },
+                    { "name": "约翰·列侬", "description": "音乐家和披头士乐队成员" }
+                ],
+                "academicStyle": "你享受个性化和富有创意的学习方式，偏好自主探索而非严格的学术框架。",
+                "academicStrengths": [
+                    "富有创意的思维和独特的视角",
+                    "在写作和创意表达方面的天赋",
+                    "能够找到学习内容与个人价值观的联系"
+                ],
+                "academicWeaknesses": [
+                    "可能在高度结构化或以事实为导向的学科中挣扎",
+                    "在截止日期和具体细节方面可能存在挑战",
+                    "可能过于沉浸在理想中而非实际应用"
+                ],
+                "suitableSubjects": "创意写作、艺术、音乐、人文学科、心理学等允许个人表达和探索人性的领域。",
+                "academicTip": "寻找将你的创意才能与实际学术要求相结合的方法，例如通过艺术或写作来展示你对学科的理解。"
+            },
+            "ENFJ": {
+                "name": "主人公",
+                "description": "ENFJ型人格被称为\"主人公\"，他们天生具有领导力，热情洋溢，关注他人的成长与发展。他们善于激发他人潜能，并能够为共同目标团结人们。",
+                "strengthList": [
+                    "出色的沟通和人际关系能力",
+                    "强烈的同理心和情感智能",
+                    "激励和引导他人的能力",
+                    "组织和协调集体活动的技巧",
+                    "真诚的助人意愿"
+                ],
+                "weaknessList": [
+                    "可能过度为他人着想而忽略自己需求",
+                    "对批评和冲突敏感",
+                    "有时过于理想主义",
+                    "可能在决策中过度考虑他人感受",
+                    "有时会显得支配或控制"
+                ],
+                "celebrities": [
+                    { "name": "奥普拉·温弗瑞", "description": "媒体大亨和慈善家" },
+                    { "name": "巴拉克·奥巴马", "description": "前美国总统" },
+                    { "name": "约翰·库萨克", "description": "演员" }
+                ],
+                "academicStyle": "你在合作学习环境中表现最佳，喜欢讨论和分享想法，为团队项目带来热情和凝聚力。",
+                "academicStrengths": [
+                    "优秀的口头表达能力和演讲技巧",
+                    "在团队项目中的领导能力",
+                    "将复杂概念以易于理解的方式传达的能力"
+                ],
+                "academicWeaknesses": [
+                    "可能过度承担团队责任",
+                    "在需要独立或客观分析的任务中可能存在挑战",
+                    "可能因过度关注社交方面而分散学习注意力"
+                ],
+                "suitableSubjects": "教育、传播学、心理咨询、人力资源、社会学等涉及人际互动和帮助他人的领域。",
+                "academicTip": "学会设定边界并照顾自己的需求，以防学业压力和社交责任导致精力耗竭。"
+            },
+            "ENFP": {
+                "name": "活动家",
+                "description": "ENFP型人格被称为\"活动家\"，他们热情洋溢、富有创造力，充满可能性。他们擅长发现联系并启发他人，热爱新体验和深层次的人际关系。",
+                "strengthList": [
+                    "出色的社交和沟通能力",
+                    "丰富的创造力和想象力",
+                    "对新事物的好奇心和热情",
+                    "灵活适应变化的能力",
+                    "强烈的同理心和情感理解力"
+                ],
+                "weaknessList": [
+                    "可能难以持续关注单一项目",
+                    "在日常细节和常规事务上可能不足",
+                    "有时过度承诺或分散注意力",
+                    "可能难以做出最终决定",
+                    "有时对批评过度敏感"
+                ],
+                "celebrities": [
+                    { "name": "罗宾·威廉姆斯", "description": "演员和喜剧演员" },
+                    { "name": "沃尔特·迪斯尼", "description": "企业家和动画制作人" },
+                    { "name": "马克·吐温", "description": "作家和幽默家" }
+                ],
+                "academicStyle": "你喜欢探索性和互动式学习，通过连接不同概念和领域找到学习的乐趣。",
+                "academicStrengths": [
+                    "创造性解决问题的能力",
+                    "在头脑风暴和生成新想法方面的天赋",
+                    "将学习内容与各种情境相联系的能力"
+                ],
+                "academicWeaknesses": [
+                    "可能难以专注于重复性或技术性学习任务",
+                    "在需要严格遵循程序的科目中可能感到受限",
+                    "可能在最后期限前拖延或转向新的兴趣点"
+                ],
+                "suitableSubjects": "艺术、表演、传播学、人文科学、创业等需要创造力和人际交往的领域。",
+                "academicTip": "利用你的创造力来设计有趣的学习策略，并寻找将抽象概念付诸实践的方法。"
+            },
+            "ISTJ": {
+                "name": "物流师",
+                "description": "ISTJ型人格被称为\"物流师\"，他们注重事实、可靠且有责任感。他们重视传统和秩序，擅长组织和执行详细计划，确保工作按时完成。",
+                "strengthList": [
+                    "高度责任感和可靠性",
+                    "注重细节和条理分明",
+                    "实际和现实的问题解决方法",
+                    "冷静和稳定的处事方式",
+                    "尊重传统和确立的规则"
+                ],
+                "weaknessList": [
+                    "对变化可能缺乏灵活性",
+                    "有时过于注重规则和传统",
+                    "可能忽视长期的创新可能性",
+                    "在情感表达方面可能显得保守",
+                    "有时可能过于判断或批判"
+                ],
+                "celebrities": [
+                    { "name": "安吉拉·默克尔", "description": "前德国总理" },
+                    { "name": "沃伦·巴菲特", "description": "投资者和商业家" },
+                    { "name": "伊丽莎白二世", "description": "英国女王" }
+                ],
+                "academicStyle": "你喜欢结构化和系统化的学习环境，专注于掌握具体的事实和程序。",
+                "academicStrengths": [
+                    "卓越的组织能力和时间管理",
+                    "对细节的关注和准确性",
+                    "遵守截止日期和学术要求的可靠性"
+                ],
+                "academicWeaknesses": [
+                    "可能在需要创新或抽象思维的领域感到不适",
+                    "对传统教学方法的依赖可能限制灵活性",
+                    "可能难以接受对既定知识的挑战"
+                ],
+                "suitableSubjects": "会计、法律、工程、医学、经济学等需要精确、条理和实际应用的领域。",
+                "academicTip": "尝试探索创新思维方法，并在适当的时候质疑既定假设，这将拓展你的学术视野。"
+            },
+            "ISTP": {
+                "name": "鉴赏家",
+                "description": "ISTP型人格被称为\"鉴赏家\"，他们是灵活的、实用主义的问题解决者。他们喜欢动手操作，擅长理解系统运作机制，冷静应对危机。",
+                "strengthList": [
+                    "卓越的逻辑分析能力",
+                    "实用主义和解决问题的效率",
+                    "对技术和机械系统的天然理解",
+                    "在危机中保持冷静的能力",
+                    "独立性和适应性"
+                ],
+                "weaknessList": [
+                    "可能显得冷漠或难以亲近",
+                    "对长期规划可能缺乏兴趣",
+                    "在高度结构化环境中可能感到受限",
+                    "有时忽视情感因素",
+                    "可能对抽象理论或概念失去耐心"
+                ],
+                "celebrities": [
+                    { "name": "克林特·伊斯特伍德", "description": "演员和导演" },
+                    { "name": "汤姆·克鲁斯", "description": "演员" },
+                    { "name": "迈克尔·乔丹", "description": "篮球运动员" }
+                ],
+                "academicStyle": "你通过实践和亲身体验学习效果最佳，偏好可以动手操作和解决实际问题的学习环境。",
+                "academicStrengths": [
+                    "卓越的故障排除和问题解决能力",
+                    "在实验室和实践环境中的出色表现",
+                    "高效率地处理技术和机械性任务"
+                ],
+                "academicWeaknesses": [
+                    "对纯理论学习可能缺乏兴趣",
+                    "可能难以遵循严格的学习计划",
+                    "在需要长期规划的项目中可能不够耐心"
+                ],
+                "suitableSubjects": "工程学、计算机科学、机械维修、应急服务、医学技术等实践性强的领域。",
+                "academicTip": "寻找理论知识与实际应用之间的联系，创造动手实践的机会来巩固你的理解。"
+            },
+            "ESTP": {
+                "name": "企业家",
+                "description": "ESTP型人格被称为\"企业家\"，他们精力充沛、现实主义、善于冒险。他们喜欢身处行动中心，擅长把握当下的机会并快速解决问题。",
+                "strengthList": [
+                    "卓越的观察力和资源管理能力",
+                    "实用主义和快速决策能力",
+                    "社交魅力和说服力",
+                    "灵活应对变化的能力",
+                    "解决危机的冷静和效率"
+                ],
+                "weaknessList": [
+                    "可能缺乏长期规划意识",
+                    "有时冒险性过强或冲动",
+                    "可能忽视行动的长期后果",
+                    "对抽象概念可能缺乏耐心",
+                    "有时过于关注实用性而忽视情感需求"
+                ],
+                "celebrities": [
+                    { "name": "唐纳德·特朗普", "description": "企业家和政治家" },
+                    { "name": "麦当娜", "description": "歌手和演员" },
+                    { "name": "杰克·尼科尔森", "description": "演员" }
+                ],
+                "academicStyle": "你是行动导向的学习者，偏好互动和实践经验，能够在需要快速思考和应对的环境中表现出色。",
+                "academicStrengths": [
+                    "能够快速适应新情况和学习实用技能",
+                    "在团队项目和讨论中积极参与",
+                    "解决实际问题的能力和创造性"
+                ],
+                "academicWeaknesses": [
+                    "可能难以专注于理论研究或抽象概念",
+                    "在需要长期专注的项目中可能不耐烦",
+                    "有时过于追求效率而忽视深度"
+                ],
+                "suitableSubjects": "商业、营销、体育管理、紧急服务、销售等需要反应快速和实际应用的领域。",
+                "academicTip": "将学习目标分解为短期可实现的任务，并寻找将理论知识应用于实际情境的机会。"
+            },
+            "ESTJ": {
+                "name": "总经理",
+                "description": "ESTJ型人格被称为\"总经理\"，他们是有责任感的组织者，重视秩序和安全。他们擅长制定具体计划，并确保任务高效完成。",
+                "strengthList": [
+                    "出色的组织和管理能力",
+                    "实用主义和务实的问题解决方法",
+                    "对细节的关注和精确性",
+                    "可靠性和责任感",
+                    "直接明了的沟通风格"
+                ],
+                "weaknessList": [
+                    "可能显得过于专断或固执",
+                    "对非传统方法可能缺乏开放性",
+                    "有时难以理解不同的观点",
+                    "可能对情感表达不够敏感",
+                    "在高度不确定性环境中可能感到不适"
+                ],
+                "celebrities": [
+                    { "name": "米歇尔·奥巴马", "description": "前美国第一夫人" },
+                    { "name": "约翰·洛克菲勒", "description": "实业家和慈善家" },
+                    { "name": "谢丽尔·桑德伯格", "description": "Meta公司首席运营官" }
+                ],
+                "academicStyle": "你喜欢结构化和有序的学习环境，重视明确的指导和具体的学习目标。",
+                "academicStrengths": [
+                    "卓越的时间管理和组织能力",
+                    "在遵循指导和规则方面的一致性",
+                    "实际应用知识解决问题的能力"
+                ],
+                "academicWeaknesses": [
+                    "在需要创新思维的任务中可能缺乏灵活性",
+                    "可能难以接受与既定观点相悖的新理念",
+                    "在开放式或自导式学习环境中可能感到不适"
+                ],
+                "suitableSubjects": "工商管理、财务、军事科学、公共行政等需要组织和实用技能的领域。",
+                "academicTip": "培养对不同学习方法和观点的开放态度，有时非传统方法也能带来意想不到的见解。"
+            },
+            "ESFP": {
+                "name": "表演者",
+                "description": "ESFP型人格被称为\"表演者\"，他们热情活泼，喜欢成为关注焦点。他们享受当下，乐于助人，擅长让周围的人感到快乐和舒适。",
+                "strengthList": [
+                    "出色的人际交往能力",
+                    "乐观积极的生活态度",
+                    "适应力强和实用主义",
+                    "善于观察他人需求",
+                    "自然的魅力和表现力"
+                ],
+                "weaknessList": [
+                    "可能难以长期专注于单一任务",
+                    "有时回避深度话题或冲突",
+                    "规划和组织方面可能不足",
+                    "可能过于寻求他人认可",
+                    "对批评可能敏感"
+                ],
+                "celebrities": [
+                    { "name": "艾伦·德杰尼勒斯", "description": "喜剧演员和脱口秀主持人" },
+                    { "name": "玛丽莲·梦露", "description": "演员和模特" },
+                    { "name": "杰米·福克斯", "description": "演员和歌手" }
+                ],
+                "academicStyle": "你通过互动和体验学习效果最佳，喜欢小组活动和实践项目，而非静态的理论学习。",
+                "academicStrengths": [
+                    "在团队合作和小组项目中表现出色",
+                    "能够使学习过程变得有趣和引人入胜",
+                    "快速适应新环境和任务"
+                ],
+                "academicWeaknesses": [
+                    "可能因社交活动分散学习注意力",
+                    "在需要独立长期研究的项目中可能挣扎",
+                    "可能难以建立有效的学习计划和坚持执行"
+                ],
+                "suitableSubjects": "表演艺术、旅游管理、公共关系、幼儿教育、体育教学等需要人际互动和实践能力的领域。",
+                "academicTip": "将学习与社交活动结合起来，如组织学习小组或参加学术讨论会，这样可以保持参与度。"
+            },
+            "ESFJ": {
+                "name": "执政官",
+                "description": "ESFJ型人格被称为\"执政官\"，他们热情友好，有强烈的责任感和奉献精神。他们重视和谐与合作，乐于帮助和支持他人。",
+                "strengthList": [
+                    "出色的人际交往和社交能力",
+                    "高度的责任感和可靠性",
+                    "关心他人福祉的同理心",
+                    "强烈的组织能力",
+                    "善于创造和谐的环境"
+                ],
+                "weaknessList": [
+                    "可能过度关注他人对自己的看法",
+                    "有时难以应对批评或冲突",
+                    "对变化可能抵抗",
+                    "可能过度承担责任",
+                    "决策可能过度依赖群体认同"
+                ],
+                "celebrities": [
+                    { "name": "泰勒·斯威夫特", "description": "歌手和词曲作者" },
+                    { "name": "比尔·克林顿", "description": "前美国总统" },
+                    { "name": "休·杰克曼", "description": "演员" }
+                ],
+                "academicStyle": "你在结构化的环境中学习效果最佳，喜欢小组学习和讨论，重视与教师和同学建立良好关系。",
+                "academicStrengths": [
+                    "出色的团队合作和小组项目协调能力",
+                    "高度组织性和完成任务的可靠性",
+                    "关注同学和老师的需求和反馈"
+                ],
+                "academicWeaknesses": [
+                    "可能过度顺从权威而非形成独立见解",
+                    "在需要批判性思考的任务中可能挣扎",
+                    "可能因过度关注他人而忽视自己的学习需求"
+                ],
+                "suitableSubjects": "教育、护理、人力资源、社会工作、酒店管理等需要组织和人际技能的领域。",
+                "academicTip": "培养独立批判性思维，不要害怕提出问题或表达不同观点，这将加深你的学习理解。"
+            },
+            "ISFP": {
+                "name": "艺术家",
+                "description": "ISFP型人格被称为\"艺术家\"，他们敏感、和善且富有艺术气质。他们注重美感体验和个人表达，倾向于活在当下并享受周围的美好事物。",
+                "strengthList": [
+                    "高度的审美意识和创造力",
+                    "真诚且忠于自我",
+                    "善于倾听和观察细节",
+                    "灵活适应不同环境",
+                    "对他人需求敏感"
+                ],
+                "weaknessList": [
+                    "可能难以长期规划",
+                    "有时过于保留自己的想法和感受",
+                    "在高压环境中可能感到不适",
+                    "对批评可能敏感",
+                    "有时避免冲突而牺牲自己的需求"
+                ],
+                "celebrities": [
+                    { "name": "鲍勃·迪伦", "description": "音乐家和诺贝尔文学奖得主" },
+                    { "name": "大卫·贝克汉姆", "description": "足球运动员" },
+                    { "name": "凯特·温斯莱特", "description": "演员" }
+                ],
+                "academicStyle": "你通过亲身体验和感官输入学习效果最佳，偏好能表达个人价值观和创造力的学习环境。",
+                "academicStrengths": [
+                    "创造性表达和艺术技能",
+                    "对实际操作和动手学习的天赋",
+                    "能够发现细微的美感和细节"
+                ],
+                "academicWeaknesses": [
+                    "可能在抽象理论或结构化学习环境中感到不适",
+                    "对不感兴趣的学科可能难以保持长期专注",
+                    "在严格的时间限制下可能感到压力"
+                ],
+                "suitableSubjects": "艺术、音乐、摄影、厨艺、自然科学、医疗保健、设计等允许个人表达和实践经验的领域。",
+                "academicTip": "寻找将学术内容与个人价值观或创造性表达联系起来的方式，并在学习中融入实践经验。"
+            },
+            "ISFJ": {
+                "name": "守卫者",
+                "description": "ISFJ型人格被称为\"守卫者\"，他们是细心、勤奋且极其忠诚的人。他们对细节有敏锐的洞察力，重视传统和安全，并以照顾他人的需求为己任。",
+                "strengthList": [
+                    "高度负责任和可靠",
+                    "细致入微和注重细节",
+                    "有耐心且实际",
+                    "对他人需求敏感",
+                    "有组织且条理分明"
+                ],
+                "weaknessList": [
+                    "过于谦虚，不善于表达自己的需求",
+                    "对批评特别敏感",
+                    "难以适应变化和新环境",
+                    "可能过于自我牺牲",
+                    "有时过度承担责任"
+                ],
+                "celebrities": [
+                    { "name": "凯特·米德尔顿", "description": "英国剑桥公爵夫人" },
+                    { "name": "罗莎·帕克斯", "description": "美国民权活动家" },
+                    { "name": "克里斯托弗·李", "description": "演员" }
+                ],
+                "academicStyle": "你擅长遵循结构化的学习方法，注重细节和实际应用，喜欢有序的学习环境。",
+                "academicStrengths": [
+                    "擅长记忆和掌握具体事实和细节",
+                    "有组织且遵守截止日期",
+                    "注重实际应用和具体知识"
+                ],
+                "academicWeaknesses": [
+                    "可能不太擅长抽象或理论性的学科",
+                    "在开放式或非结构化的学习环境中挣扎",
+                    "批判性思考可能不是自然的强项"
+                ],
+                "suitableSubjects": "护理、教育、社会工作、图书馆学、会计等需要细致、耐心和实用技能的领域。",
+                "academicTip": "在学习新概念时，尝试将抽象理论与实际例子联系起来，这将帮助你更好地理解和记忆。"
+            }
+        };
+
+        // DOM 元素
+        const resultTypeElement = document.getElementById('result-type');
+        const resultNameElement = document.getElementById('result-name');
+        const resultDescriptionElement = document.getElementById('result-description');
+        const cognitiveElementsContainer = document.getElementById('cognitive-functions');
+        const strengthsListElement = document.getElementById('strengths-list');
+        const weaknessesListElement = document.getElementById('weaknesses-list');
+        const celebritiesContainer = document.getElementById('celebrities-container');
+        const radarChartCanvas = document.getElementById('radar-chart');
+        const resultTabs = document.querySelectorAll('.result-tab');
+        const resultSections = document.querySelectorAll('.result-section');
+        
+        // 学业部分
+        const learningStyleElement = document.getElementById('learning-style');
+        const academicStrengthsElement = document.getElementById('academic-strengths');
+        const academicWeaknessesElement = document.getElementById('academic-weaknesses');
+        const academicTipElement = document.getElementById('academic-tip');
+        const suitableSubjectsElement = document.getElementById('suitable-subjects');
+        
+        // 从本地存储获取测试结果
+        function getTestResult() {
+            console.log("正在获取测试结果...");
+            const resultData = localStorage.getItem('mbtiTestResult');
+            
+            // 调试信息
+            console.log("localStorage中的数据:", resultData);
+            
+            if (resultData) {
+                try {
+                    return JSON.parse(resultData);
+                } catch (e) {
+                    console.error('解析测试结果出错:', e);
+                    // 出错时返回默认INTJ
+                    return getDefaultResult();
+                }
+            }
+            
+            // 如果没有结果，返回默认值用于测试
+            console.log("未找到测试结果，使用默认INTJ类型");
+            return getDefaultResult();
+        }
+        
+        // 获取默认的INTJ结果
+        function getDefaultResult() {
+            return {
+                type: "ISFJ",  // 使用ISFJ作为默认类型用于测试
+                percentages: {
+                    E: 25, I: 75,
+                    S: 70, N: 30,
+                    T: 35, F: 65,
+                    J: 60, P: 40
+                }
+            };
+        }
+        
+        // 初始化结果页面
+        function initResultPage() {
+            console.log("初始化结果页面...");
+            
+            const result = getTestResult();
+            if (!result) {
+                console.error('未找到测试结果');
+                return;
+            }
+            
+            const personalityType = result.type;
+            const personality = personalityData[personalityType];
+            
+            if (!personality) {
+                console.error('未找到性格类型数据:', personalityType);
+                return;
+            }
+            
+            console.log("加载性格类型:", personalityType, personality.name);
+            
+            // 更新结果头部
+            resultTypeElement.textContent = personalityType;
+            resultNameElement.textContent = personality.name;
+            resultDescriptionElement.textContent = personality.description;
+            
+            // 创建雷达图
+            createRadarChart(result.percentages);
+            
+            // 清空现有列表内容
+            strengthsListElement.innerHTML = '';
+            weaknessesListElement.innerHTML = '';
+            celebritiesContainer.innerHTML = '';
+            
+            if (academicStrengthsElement) academicStrengthsElement.innerHTML = '';
+            if (academicWeaknessesElement) academicWeaknessesElement.innerHTML = '';
+            
+            // 填充优势列表
+            personality.strengthList.forEach(strength => {
+                const li = document.createElement('li');
+                li.textContent = strength;
+                strengthsListElement.appendChild(li);
+            });
+            
+            // 填充挑战列表
+            personality.weaknessList.forEach(weakness => {
+                const li = document.createElement('li');
+                li.textContent = weakness;
+                weaknessesListElement.appendChild(li);
+            });
+            
+            // 填充名人案例
+            personality.celebrities.forEach(celebrity => {
+                const celebrityElement = document.createElement('div');
+                celebrityElement.className = 'celebrity-item';
+                
+                const celebrityName = document.createElement('div');
+                celebrityName.className = 'celebrity-name';
+                celebrityName.textContent = celebrity.name;
+                
+                const celebrityDescription = document.createElement('div');
+                celebrityDescription.className = 'celebrity-description';
+                celebrityDescription.textContent = celebrity.description;
+                
+                celebrityElement.appendChild(celebrityName);
+                celebrityElement.appendChild(celebrityDescription);
+                celebritiesContainer.appendChild(celebrityElement);
+            });
+            
+            // 填充学业部分
+            if (learningStyleElement) {
+                learningStyleElement.textContent = personality.academicStyle;
+            }
+            
+            if (academicStrengthsElement) {
+                personality.academicStrengths.forEach(strength => {
+                    const li = document.createElement('li');
+                    li.textContent = strength;
+                    academicStrengthsElement.appendChild(li);
+                });
+            }
+            
+            if (academicWeaknessesElement) {
+                personality.academicWeaknesses.forEach(weakness => {
+                    const li = document.createElement('li');
+                    li.textContent = weakness;
+                    academicWeaknessesElement.appendChild(li);
+                });
+            }
+            
+            if (academicTipElement) {
+                academicTipElement.textContent = personality.academicTip;
+            }
+            
+            if (suitableSubjectsElement) {
+                suitableSubjectsElement.textContent = personality.suitableSubjects;
+            }
+            
+            // 职业发展部分
+            const careerSection = document.getElementById('career-section');
+            if (careerSection) {
+                const careerContent = careerSection.querySelector('.advice-card-content');
+                if (careerContent) {
+                    careerContent.innerHTML = `
+                        <p>作为${personality.name}(${personalityType})，你适合以下职业方向：</p>
+                        <ul class="advice-list">
+                            ${getCareerAdvice(personalityType)}
+                        </ul>
+                        <p>职业发展建议：</p>
+                        <div class="advice-tip">
+                            ${getCareerTip(personalityType)}
+                        </div>
+                    `;
+                }
+            }
+            
+            // 恋爱关系部分
+            const relationshipSection = document.getElementById('relationship-section');
+            if (relationshipSection) {
+                const relationshipContent = relationshipSection.querySelector('.advice-card-content');
+                if (relationshipContent) {
+                    relationshipContent.innerHTML = `
+                        <p>作为${personality.name}(${personalityType})，你在恋爱关系中的特点：</p>
+                        <ul class="advice-list">
+                            ${getRelationshipTraits(personalityType)}
+                        </ul>
+                        <p>恋爱关系建议：</p>
+                        <div class="advice-tip">
+                            ${getRelationshipTip(personalityType)}
+                        </div>
+                        <p>最佳匹配类型：</p>
+                        <div class="compatible-types">
+                            ${getCompatibleTypes(personalityType).map(type => `<div class="compatible-type">${type}</div>`).join('')}
+                        </div>
+                    `;
+                }
+            }
+            
+            // 设置标签切换事件
+            resultTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有标签和内容区域的激活状态
+                    resultTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // 激活当前标签
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    const tabSection = document.getElementById(`${tabId}-section`);
+                    
+                    if (tabSection) {
+                        // 滚动到对应的内容区域，添加平滑滚动效果
+                        tabSection.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        console.warn(`未找到ID为${tabId}-section的元素`);
+                    }
+                });
+            });
+            
+            console.log("结果页面初始化完成");
+        }
+        
+        // 确保页面加载完成后立即初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM内容加载完成，准备初始化...");
+            
+            // 检查所有16种MBTI类型是否都存在
+            const allTypes = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 
+                             'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
+            
+            const missingTypes = [];
+            allTypes.forEach(type => {
+                if (!personalityData[type]) {
+                    missingTypes.push(type);
+                    console.error(`缺少性格类型数据: ${type}`);
+                }
+            });
+            
+            if (missingTypes.length > 0) {
+                console.error(`以下类型数据缺失: ${missingTypes.join(', ')}`);
+            } else {
+                console.log("所有16种MBTI类型数据均已存在");
+            }
+            
+            initResultPage();
+        });
+        
+        // 如果页面已经加载完成，立即初始化
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            console.log("页面已加载，立即初始化...");
+            setTimeout(initResultPage, 100);
+        }
+        
+        // 获取职业建议
+        function getCareerAdvice(personalityType) {
+            const careerAdvice = {
+                "INTJ": "<li>战略规划师</li><li>科学研究员</li><li>系统分析师</li><li>软件开发工程师</li><li>企业架构师</li>",
+                "INTP": "<li>数据科学家</li><li>软件开发工程师</li><li>研究科学家</li><li>大学教授</li><li>系统分析师</li>",
+                "ENTJ": "<li>企业高管</li><li>管理顾问</li><li>律师</li><li>企业家</li><li>金融分析师</li>",
+                "ENTP": "<li>企业家</li><li>市场营销专家</li><li>咨询顾问</li><li>创意总监</li><li>发明家</li>",
+                "INFJ": "<li>心理咨询师</li><li>教师</li><li>作家</li><li>人力资源专家</li><li>非营利组织领导</li>",
+                "INFP": "<li>作家</li><li>艺术家</li><li>心理咨询师</li><li>社会工作者</li><li>人力资源专家</li>",
+                "ENFJ": "<li>教育工作者</li><li>培训师</li><li>公共关系专家</li><li>销售经理</li><li>非营利组织领导</li>",
+                "ENFP": "<li>公关顾问</li><li>广告创意人员</li><li>记者</li><li>企业家</li><li>活动策划师</li>",
+                "ISTJ": "<li>会计师</li><li>审计师</li><li>项目经理</li><li>行政管理人员</li><li>军事或执法人员</li>",
+                "ISFJ": "<li>护士</li><li>小学教师</li><li>社会工作者</li><li>行政助理</li><li>客户服务代表</li>",
+                "ESTJ": "<li>项目经理</li><li>销售经理</li><li>金融顾问</li><li>行政管理人员</li><li>军事或执法领导</li>",
+                "ESFJ": "<li>人力资源专家</li><li>医疗保健管理员</li><li>销售代表</li><li>教师</li><li>公共关系专家</li>",
+                "ISTP": "<li>工程师</li><li>机械师</li><li>飞行员</li><li>紧急响应人员</li><li>技术专家</li>",
+                "ISFP": "<li>艺术家</li><li>设计师</li><li>厨师</li><li>护理人员</li><li>音乐家</li>",
+                "ESTP": "<li>企业家</li><li>销售代表</li><li>营销专家</li><li>警察或消防员</li><li>运动员</li>",
+                "ESFP": "<li>艺人</li><li>活动策划师</li><li>销售代表</li><li>旅游顾问</li><li>公关专家</li>"
+            };
+            
+            return careerAdvice[personalityType] || "<li>根据个人兴趣和能力选择职业</li>";
+        }
+        
+        // 创建雷达图
+        function createRadarChart(percentages) {
+            console.log("开始创建雷达图，数据:", percentages);
+            
+            if (!radarChartCanvas) {
+                console.error("找不到雷达图画布元素");
+                return;
+            }
+            
+            try {
+                const ctx = radarChartCanvas.getContext('2d');
+                
+                if (!ctx) {
+                    console.error("无法获取2D上下文");
+                    return;
+                }
+                
+                console.log("成功获取2D上下文，准备创建图表");
+                
+                // 如果已存在图表，先销毁
+                if (window.mbtiRadarChart) {
+                    window.mbtiRadarChart.destroy();
+                }
+                
+                const data = {
+                    labels: ['外向 (E)', '感觉 (S)', '思考 (T)', '判断 (J)', '知觉 (P)', '情感 (F)', '直觉 (N)', '内向 (I)'],
+                    datasets: [{
+                        label: 'MBTI 偏好',
+                        data: [
+                            percentages.E || 0, 
+                            percentages.S || 0, 
+                            percentages.T || 0, 
+                            percentages.J || 0, 
+                            percentages.P || 0, 
+                            percentages.F || 0, 
+                            percentages.N || 0, 
+                            percentages.I || 0
+                        ],
+                        fill: true,
+                        backgroundColor: 'rgba(59, 124, 255, 0.2)',
+                        borderColor: 'rgb(59, 124, 255)',
+                        pointBackgroundColor: 'rgb(59, 124, 255)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(59, 124, 255)'
+                    }]
+                };
+                
+                const config = {
+                    type: 'radar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        elements: {
+                            line: {
+                                borderWidth: 3
+                            }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: true
+                                },
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                };
+                
+                console.log("图表配置完成，准备渲染");
+                
+                // 检查Chart是否存在
+                if (typeof Chart === 'undefined') {
+                    console.error("Chart.js库未加载");
+                    return;
+                }
+                
+                // 确保canvas尺寸正确设置
+                radarChartCanvas.style.width = '100%';
+                radarChartCanvas.style.height = '100%';
+                
+                // 创建图表并保存引用
+                window.mbtiRadarChart = new Chart(ctx, config);
+                console.log("雷达图创建成功");
+                
+            } catch (error) {
+                console.error("创建雷达图时出错:", error);
+            }
+        }
+        
+        // 添加窗口大小调整监听器，确保图表正确显示
+        window.addEventListener('resize', function() {
+            // 如果存在图表，重新调整其大小
+            if (window.mbtiRadarChart && window.mbtiRadarChart.resize) {
+                window.mbtiRadarChart.resize();
+            }
+            
+            // 确保雷达图和描述不重叠
+            const radarContainer = document.querySelector('.radar-chart-container');
+            const description = document.querySelector('.result-description');
+            
+            if (radarContainer && description) {
+                // 确保描述部分在雷达图下方显示
+                description.style.marginTop = '20px';
+            }
+        });
+        
+        // 获取职业建议提示
+        function getCareerTip(personalityType) {
+            const careerTips = {
+                "INTJ": "利用你的战略思维和分析能力，寻找允许你独立工作并实施长期愿景的职业。避免高度社交互动或缺乏自主性的环境。",
+                "INTP": "选择能让你解决复杂问题并自由探索新想法的工作环境。确保有足够的自主权和持续的智力挑战。",
+                "ENTJ": "追求能让你发挥领导才能的职业，寻找可以制定战略和指导团队的机会。不要满足于缺乏晋升空间的职位。",
+                "ENTP": "寻找能持续提供新挑战和创新机会的职业，避免高度重复和受限的工作环境。考虑兼职或自由职业以保持多样性。",
+                "INFJ": "选择与你的价值观一致并能帮助他人的职业。寻找能够看到工作对他人积极影响的岗位。",
+                "INFP": "追求能够表达你的创造力和价值观的职业。寻找灵活、支持性的工作环境，避免过于竞争或冷漠的企业文化。",
+                "ENFJ": "选择能够指导和帮助他人成长的职业。寻找团队合作和积极影响社区的机会。避免孤立或过于客观的工作环境。",
+                "ENFP": "寻找能满足你创造力和社交需求的职业。追求多样化的任务和与不同人接触的机会。定期评估你的职业是否仍然激发你的热情。",
+                "ISTJ": "选择结构化且稳定的职业环境，重视你的组织能力和对细节的关注。寻找能够应用既定程序和系统的工作。",
+                "ISFJ": "追求能够直接帮助他人且有明确程序的职业。重视稳定性和可预测性，选择能够发挥你细致入微能力的工作环境。",
+                "ESTJ": "寻找能够发挥你的组织和管理才能的职业。选择有明确层级结构和目标的行业，避免过于松散或无结构的环境。",
+                "ESFJ": "选择能让你与人直接互动并提供实际帮助的职业。寻找团队合作和支持性的工作环境，避免高度竞争或冷漠的文化。",
+                "ISTP": "追求能够运用你动手能力和技术专长的职业。寻找提供多样性和自主性的工作，避免过于程序化或重复的任务。",
+                "ISFP": "选择能够表达你创造性和美学鉴赏力的职业。寻找自由度高且能够按自己节奏工作的环境。",
+                "ESTP": "寻找充满活力和立即挑战的职业。选择能够让你在行动中学习并运用你适应能力的工作。避免需要长期规划的职业。",
+                "ESFP": "追求能够与人互动并展示你活力的职业。选择多样化、有趣且社交性强的工作环境，避免孤立或高度分析性的职位。"
+            };
+            
+            return careerTips[personalityType] || "选择符合你的核心价值观、兴趣和能力的职业，确保工作环境与你的性格特点相匹配。";
+        }
+        
+        // 获取恋爱关系特征
+        function getRelationshipTraits(personalityType) {
+            const relationshipTraits = {
+                "INTJ": "<li>重视智力连接和深度对话</li><li>忠诚且投入</li><li>喜欢给予伴侣空间</li><li>可能在表达情感方面保守</li>",
+                "INTP": "<li>欣赏独立自主的伴侣</li><li>通过分享想法和理念表达爱意</li><li>需要个人空间</li><li>可能在情感表达方面显得迟钝</li>",
+                "ENTJ": "<li>直接且坦率地表达需求</li><li>寻求智力匹配的伴侣</li><li>致力于关系的成长和发展</li><li>可能显得过于控制或主导</li>",
+                "ENTP": "<li>喜欢充满活力和辩论的关系</li><li>渴望智力刺激</li><li>善于保持关系的新鲜感</li><li>可能难以处理情感需求</li>",
+                "INFJ": "<li>深度投入且富有同情心</li><li>寻求真实且有意义的连接</li><li>重视长期稳定的关系</li><li>可能难以表达个人需求</li>",
+                "INFP": "<li>重视深层情感连接</li><li>理想化的爱情观</li><li>高度忠诚和投入</li><li>寻求和谐且真实的关系</li>",
+                "ENFJ": "<li>热情且关注伴侣需求</li><li>善于沟通和解决冲突</li><li>寻求长期且有意义的关系</li><li>可能过度牺牲自我</li>",
+                "ENFP": "<li>充满激情和活力</li><li>善于表达情感</li><li>寻求深度连接和成长</li><li>需要自由和支持性的关系</li>",
+                "ISTJ": "<li>忠诚且可靠</li><li>寻求稳定和长期承诺</li><li>通过实际行动表达爱意</li><li>可能在情感表达方面较为保守</li>",
+                "ISFJ": "<li>高度奉献且体贴</li><li>重视稳定和安全</li><li>通过细心照顾表达爱意</li><li>希望得到认可和感激</li>",
+                "ESTJ": "<li>直接且实际的表达方式</li><li>寻求传统和稳定的关系</li><li>愿意承担责任</li><li>可能在情感表达方面较为保守</li>",
+                "ESFJ": "<li>热情且关怀</li><li>重视家庭和社交联系</li><li>善于创造和谐的关系氛围</li><li>寻求肯定和感激</li>",
+                "ISTP": "<li>需要独立和空间</li><li>通过共同活动建立连接</li><li>寻求轻松和谐的关系</li><li>可能在情感承诺方面谨慎</li>",
+                "ISFP": "<li>温暖而敏感</li><li>通过小行动表达情感</li><li>重视个人空间</li><li>寻求真实和接纳</li>",
+                "ESTP": "<li>充满活力和冒险精神</li><li>享受当下的关系体验</li><li>直接表达需求和欲望</li><li>可能难以长期规划</li>",
+                "ESFP": "<li>热情活泼</li><li>善于创造浪漫时刻</li><li>重视共同乐趣和体验</li><li>寻求积极和支持性的关系</li>"
+            };
+            
+            return relationshipTraits[personalityType] || "<li>每个人在恋爱关系中都有独特的表现方式</li>";
+        }
+        
+        // 获取恋爱关系建议
+        function getRelationshipTip(personalityType) {
+            const relationshipTips = {
+                "INTJ": "学习表达你的情感需求，即使这感觉不自然。记住，亲密关系需要情感上的开放和脆弱，而不仅仅是理性分析。",
+                "INTP": "尝试定期与伴侣沟通你的感受，而不仅仅是想法。即使感觉不舒适，也要努力表达情感上的亲密和关心。",
+                "ENTJ": "在关系中给予伴侣更多发言权，避免过度控制或主导所有决定。学习倾听和欣赏不同的观点和处事方式。",
+                "ENTP": "培养持续和一致性，特别是当关系的新鲜感减退时。学习欣赏日常生活中的小幸福，而不总是寻求刺激。",
+                "INFJ": "设立健康的界限，不要过度为他人牺牲自己。学会表达自己的需求，并相信伴侣同样关心你的幸福。",
+                "INFP": "避免将伴侣理想化或期望完美关系。接受现实中的矛盾和冲突，并视其为成长的机会而非关系的终结。",
+                "ENFJ": "平衡满足伴侣需求和照顾自己之间的关系。学会接受他人的关心，而不仅仅是一味付出。",
+                "ENFP": "发展持续专注于关系的能力，特别是在兴奋感减退后。建立稳定的沟通习惯，确保双方需求都得到满足。",
+                "ISTJ": "尝试更开放地表达情感和赞赏。记住，即使在长期关系中，浪漫和情感表达对维持亲密感仍然很重要。",
+                "ISFJ": "学会直接表达自己的需求和不满，而不是默默忍受或期望伴侣自己察觉。建立健康的界限，避免过度付出。",
+                "ESTJ": "发展更多的情感敏感性，尝试理解和接受伴侣的感受，即使它们在你看来不合逻辑。不要急于解决问题，有时仅仅是倾听就足够了。",
+                "ESFJ": "培养独立性，不要过度依赖伴侣的肯定。学习接受冲突和分歧是健康关系的一部分，不必总是寻求和谐。",
+                "ISTP": "尝试更经常地表达你的感受和情感，即使只是简短的表达。让伴侣知道他们对你的重要性，而不仅仅是通过行动表现。",
+                "ISFP": "练习更直接地沟通你的需求和界限，而不是希望伴侣能够读懂你的心思。在面对冲突时保持开放和坦诚。",
+                "ESTP": "培养长期思维和承诺能力。考虑你的行动如何影响关系的未来，而不仅仅是当下的满足感。",
+                "ESFP": "在关系的兴奋感之外发展更深层次的连接。学习处理困难对话和冲突，而不是回避或分散注意力。"
+            };
+            
+            return relationshipTips[personalityType] || "在恋爱关系中保持真实、开放的沟通，尊重彼此的差异，共同成长。";
+        }
+        
+        // 获取兼容类型
+        function getCompatibleTypes(personalityType) {
+            const compatibleTypes = {
+                "INTJ": ["ENFP", "ENTP", "INFJ", "INFP"],
+                "INTP": ["ENFJ", "ENTJ", "INFJ", "ENTP"],
+                "ENTJ": ["INFP", "INTP", "ENFP", "ENTP"],
+                "ENTP": ["INFJ", "INTJ", "ENFJ", "ENTJ"],
+                "INFJ": ["ENTP", "ENFP", "INTJ", "INFP"],
+                "INFP": ["ENFJ", "ENTJ", "INFJ", "INTJ"],
+                "ENFJ": ["INFP", "ISFP", "INTP", "ISTP"],
+                "ENFP": ["INTJ", "INFJ", "ENTJ", "ENFJ"],
+                "ISTJ": ["ESFP", "ESTP", "ISFJ", "ESTJ"],
+                "ISFJ": ["ESFP", "ESTP", "ISTJ", "ISFP"],
+                "ESTJ": ["ISFP", "ISTP", "ISTJ", "ESFJ"],
+                "ESFJ": ["ISFP", "ISTP", "ESTJ", "ESFP"],
+                "ISTP": ["ESFJ", "ENFJ", "ESTJ", "ENTJ"],
+                "ISFP": ["ENFJ", "ESFJ", "ESTJ", "ENTJ"],
+                "ESTP": ["ISFJ", "ISTJ", "ESFJ", "ESTJ"],
+                "ESFP": ["ISFJ", "ISTJ", "ESFJ", "ESTJ"]
+            };
+            
+            return compatibleTypes[personalityType] || ["各种性格类型都有可能建立良好的关系"];
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', initResultPage);
+        
+        // 返回顶部按钮控制
+        const backToTopButton = document.getElementById('back-to-top');
+        if (backToTopButton) {
+            // 监听滚动事件，决定是否显示返回顶部按钮
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            });
+            
+            // 点击按钮返回顶部
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+        
+        // 保存结果按钮控制
+        const saveResultBtn = document.getElementById('save-result-btn');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        if (saveResultBtn) {
+            saveResultBtn.addEventListener('click', saveResultAsImage);
+        }
+        
+        // 保存结果为图片
+        function saveResultAsImage() {
+            // 显示加载动画
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+            
+            // 获取要截图的内容区域
+            const resultContainer = document.querySelector('.result-container');
+            
+            if (!resultContainer) {
+                alert('无法找到结果内容区域');
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                return;
+            }
+            
+            // 创建一个新的克隆元素，以便我们可以修改它而不影响原始页面
+            const clonedContainer = resultContainer.cloneNode(true);
+            clonedContainer.style.width = resultContainer.offsetWidth + 'px';
+            clonedContainer.style.position = 'absolute';
+            clonedContainer.style.top = '-9999px';
+            clonedContainer.style.left = '-9999px';
+            document.body.appendChild(clonedContainer);
+            
+            // 确保所有内容都是可见的（不受CSS display属性影响）
+            const sections = clonedContainer.querySelectorAll('.result-section');
+            sections.forEach(section => {
+                section.style.display = 'block';
+                section.style.opacity = '1';
+                section.style.visibility = 'visible';
+            });
+            
+            // 先处理雷达图，确保它被正确渲染在克隆容器中
+            const originalRadarCanvas = document.getElementById('radar-chart');
+            if (originalRadarCanvas) {
+                const radarChartImg = new Image();
+                radarChartImg.src = originalRadarCanvas.toDataURL('image/png');
+                
+                // 找到克隆容器中的雷达图位置并替换为图片
+                const clonedRadarContainer = clonedContainer.querySelector('.radar-chart-container');
+                if (clonedRadarContainer) {
+                    clonedRadarContainer.innerHTML = '';
+                    radarChartImg.style.width = '100%';
+                    radarChartImg.style.height = 'auto';
+                    radarChartImg.style.maxHeight = '400px';
+                    clonedRadarContainer.appendChild(radarChartImg);
+                }
+            }
+            
+            // 使用html2canvas将内容转换为图片
+            html2canvas(clonedContainer, {
+                scale: 2, // 更高的分辨率
+                useCORS: true, // 允许加载跨域资源
+                logging: false, // 关闭日志
+                allowTaint: true, // 允许使用污染的canvas
+                backgroundColor: '#ffffff', // 白色背景
+                ignoreElements: (element) => {
+                    // 如果使用了克隆并替换雷达图，就不需要忽略canvas元素
+                    return false;
+                }
+            }).then(canvas => {
+                // 转换为图片并下载
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                const link = document.createElement('a');
+                
+                // 获取性格类型作为文件名的一部分
+                const personalityType = document.getElementById('result-type').textContent || 'MBTI';
+                const personalityName = document.getElementById('result-name').textContent || '性格分析';
+                
+                link.download = `${personalityType}-${personalityName}-性格分析.jpg`;
+                link.href = imgData;
+                link.click();
+                
+                // 移除克隆的容器
+                document.body.removeChild(clonedContainer);
+                
+                // 隐藏加载动画
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            }).catch(error => {
+                console.error('生成图片时出错:', error);
+                alert('生成图片时出错，请重试');
+                
+                // 移除克隆的容器
+                document.body.removeChild(clonedContainer);
+                
+                // 隐藏加载动画
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

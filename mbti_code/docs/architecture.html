@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术架构 - MBTI性格测试微信小程序</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>MBTI性格测试</h1>
+                <p>微信小程序技术文档</p>
+            </div>
+            <nav id="main-nav">
+                <button id="menu-toggle" aria-label="菜单">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul>
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="architecture.html" class="active">技术架构</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="frontend.html">前端实现</a></li>
+                    <li><a href="backend.html">后端实现</a></li>
+                    <li><a href="deployment.html">部署指南</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="doc-header">
+        <div class="container">
+            <h1>MBTI性格测试微信小程序技术架构</h1>
+            <p>本文档详细介绍了MBTI性格测试微信小程序的整体技术架构、系统设计和数据流</p>
+        </div>
+    </div>
+
+    <div class="doc-content">
+        <div class="container">
+            <div class="doc-wrapper">
+                <aside class="doc-sidebar">
+                    <div class="doc-sidebar-sticky">
+                        <h3>目录</h3>
+                        <ul class="doc-nav">
+                            <li><a href="#overview" class="active">架构概述</a></li>
+                            <li><a href="#frontend-architecture">前端架构</a></li>
+                            <li><a href="#backend-architecture">后端架构</a></li>
+                            <li><a href="#database-design">数据库设计</a></li>
+                            <li><a href="#api-design">API接口设计</a></li>
+                            <li><a href="#security">安全设计</a></li>
+                            <li><a href="#performance">性能优化</a></li>
+                            <li><a href="#deployment">部署架构</a></li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <main class="doc-main">
+                    <section id="overview" class="doc-section">
+                        <h2>架构概述</h2>
+                        <p>MBTI性格测试微信小程序采用前后端分离的架构设计，前端使用微信小程序原生框架，后端使用Node.js + Express.js + MongoDB技术栈。整体系统分为四个主要层次：</p>
+                        
+                        <ul>
+                            <li><strong>表现层</strong>：微信小程序客户端，负责用户界面展示和交互</li>
+                            <li><strong>应用层</strong>：RESTful API服务，处理业务逻辑和数据处理</li>
+                            <li><strong>数据层</strong>：MongoDB数据库，存储用户数据、测试题目和结果</li>
+                            <li><strong>缓存层</strong>：Redis缓存（可选），提高系统性能</li>
+                        </ul>
+
+                        <p>系统架构图如下：</p>
+                        <div class="image-placeholder">
+                            <img src="../images/architecture-diagram.png" alt="系统架构图">
+                        </div>
+
+                        <p>主要技术选型：</p>
+                        <ul>
+                            <li><strong>前端</strong>：微信小程序原生框架（WXML、WXSS、JavaScript）</li>
+                            <li><strong>后端</strong>：Node.js + Express.js</li>
+                            <li><strong>数据库</strong>：MongoDB</li>
+                            <li><strong>身份验证</strong>：JWT（JSON Web Token）</li>
+                            <li><strong>缓存</strong>：Redis（可选）</li>
+                            <li><strong>部署环境</strong>：云服务器 + Nginx + PM2</li>
+                        </ul>
+                    </section>
+
+                    <section id="frontend-architecture" class="doc-section">
+                        <h2>前端架构</h2>
+                        <p>前端采用微信小程序原生框架开发，遵循微信小程序的开发规范和最佳实践。</p>
+
+                        <h3>目录结构</h3>
+                        <pre><code class="language-text">frontend/
+├── app.js                # 小程序入口文件
+├── app.json              # 全局配置
+├── app.wxss              # 全局样式
+├── components/           # 自定义组件
+│   ├── radar-chart/      # 雷达图组件
+│   ├── progress-bar/     # 进度条组件
+│   └── share-card/       # 分享卡片组件
+├── pages/                # 页面文件
+│   ├── index/            # 首页
+│   ├── test-intro/       # 测试引导页
+│   ├── test-question/    # 测试题目页
+│   ├── test-result/      # 测试结果页
+│   └── ...               # 其他页面
+├── utils/                # 工具函数
+│   ├── api.js            # API请求封装
+│   ├── storage.js        # 本地存储工具
+│   └── util.js           # 通用工具函数
+└── assets/               # 静态资源
+    ├── images/           # 图片资源
+    └── icons/            # 图标资源</code></pre>
+
+                        <h3>核心组件</h3>
+                        <p>小程序包含以下核心自定义组件：</p>
+                        <ul>
+                            <li><strong>雷达图组件（radar-chart）</strong>：用于展示MBTI四维度倾向值，支持手势缩放和数值标签切换</li>
+                            <li><strong>进度条组件（progress-bar）</strong>：用于显示测试进度和预计剩余时间</li>
+                            <li><strong>分享卡片组件（share-card）</strong>：用于生成测试结果分享图片</li>
+                        </ul>
+
+                        <h3>页面流程</h3>
+                        <p>用户在小程序中的主要流程如下：</p>
+                        <ol>
+                            <li>首页：用户登录和测试入口</li>
+                            <li>测试引导页：介绍测试说明和注意事项</li>
+                            <li>测试题目页：逐题作答93道MBTI题目</li>
+                            <li>测试结果页：展示测试结果和多维度解析</li>
+                            <li>场景建议页：针对不同场景的详细建议</li>
+                        </ol>
+
+                        <h3>状态管理</h3>
+                        <p>小程序使用以下方式管理状态：</p>
+                        <ul>
+                            <li><strong>全局状态</strong>：通过app.js中的globalData管理全局状态</li>
+                            <li><strong>页面状态</strong>：各页面通过data属性管理页面状态</li>
+                            <li><strong>本地缓存</strong>：使用wx.setStorage/wx.getStorage存储持久化数据</li>
+                        </ul>
+                    </section>
+
+                    <section id="backend-architecture" class="doc-section">
+                        <h2>后端架构</h2>
+                        <p>后端采用Node.js + Express.js构建RESTful API服务，使用MongoDB作为数据存储。</p>
+
+                        <h3>目录结构</h3>
+                        <pre><code class="language-text">backend/
+├── app.js                # 应用入口文件
+├── config/               # 配置文件
+│   └── index.js          # 主配置文件
+├── models/               # 数据模型
+│   ├── User.js           # 用户模型
+│   ├── Question.js       # 题目模型
+│   ├── TestRecord.js     # 测试记录模型
+│   ├── PersonalityType.js # 人格类型模型
+│   └── ScenarioAdvice.js # 场景建议模型
+├── routes/               # 路由文件
+│   ├── user.js           # 用户相关路由
+│   ├── test.js           # 测试相关路由
+│   ├── result.js         # 结果相关路由
+│   └── admin.js          # 管理后台路由
+├── controllers/          # 控制器
+│   ├── userController.js # 用户控制器
+│   ├── testController.js # 测试控制器
+│   └── ...               # 其他控制器
+├── services/             # 服务层
+│   ├── authService.js    # 认证服务
+│   ├── testService.js    # 测试服务
+│   └── ...               # 其他服务
+├── middlewares/          # 中间件
+│   ├── auth.js           # 认证中间件
+│   ├── errorHandler.js   # 错误处理中间件
+│   └── ...               # 其他中间件
+└── utils/                # 工具函数
+    ├── logger.js         # 日志工具
+    └── helpers.js        # 辅助函数</code></pre>
+
+                        <h3>核心模块</h3>
+                        <p>后端包含以下核心模块：</p>
+                        <ul>
+                            <li><strong>用户认证模块</strong>：处理微信登录和JWT令牌管理</li>
+                            <li><strong>测试管理模块</strong>：处理题目获取、答案保存和结果计算</li>
+                            <li><strong>结果分析模块</strong>：处理MBTI结果计算和报告生成</li>
+                            <li><strong>数据统计模块</strong>：处理用户数据统计和分析</li>
+                            <li><strong>管理后台模块</strong>：处理题库管理和系统配置</li>
+                        </ul>
+
+                        <h3>中间件</h3>
+                        <p>系统使用以下Express中间件：</p>
+                        <ul>
+                            <li><strong>cors</strong>：处理跨域请求</li>
+                            <li><strong>body-parser</strong>：解析请求体</li>
+                            <li><strong>jwt-auth</strong>：处理JWT认证</li>
+                            <li><strong>error-handler</strong>：统一错误处理</li>
+                            <li><strong>rate-limiter</strong>：请求频率限制</li>
+                        </ul>
+                    </section>
+
+                    <section id="database-design" class="doc-section">
+                        <h2>数据库设计</h2>
+                        <p>系统使用MongoDB作为主数据库，采用文档模型设计。主要集合（Collections）如下：</p>
+
+                        <h3>User集合</h3>
+                        <p>存储用户信息、成就和积分。</p>
+                        <pre><code class="language-javascript">{
+  _id: ObjectId,
+  openId: String,          // 微信OpenID
+  nickname: String,        // 用户昵称
+  avatar: String,          // 头像URL
+  gender: Number,          // 性别：0未知，1男，2女
+  testCount: Number,       // 测试次数
+  lastTestTime: Date,      // 最后测试时间
+  achievements: [{         // 成就列表
+    id: String,            // 成就ID
+    name: String,          // 成就名称
+    unlockTime: Date       // 解锁时间
+  }],
+  points: Number,          // 积分
+  createdAt: Date,         // 创建时间
+  updatedAt: Date          // 更新时间
+}</code></pre>
+
+                        <h3>Question集合</h3>
+                        <p>存储MBTI测试题目，包含维度、方向和权重。</p>
+                        <pre><code class="language-javascript">{
+  _id: ObjectId,
+  content: String,         // 题目内容
+  dimension: String,       // 维度：EI, SN, TF, JP
+  direction: Number,       // 方向：1或-1
+  weight: Number,          // 权重
+  version: String,         // 版本号
+  order: Number,           // 排序序号
+  createdAt: Date,         // 创建时间
+  updatedAt: Date          // 更新时间
+}</code></pre>
+
+                        <h3>TestRecord集合</h3>
+                        <p>存储用户的测试记录和结果。</p>
+                        <pre><code class="language-javascript">{
+  _id: ObjectId,
+  userId: ObjectId,        // 用户ID
+  answers: [{              // 答案列表
+    questionId: ObjectId,  // 题目ID
+    value: Number          // 答案值（1-5）
+  }],
+  dimensions: {            // 维度得分
+    EI: Number,
+    SN: Number,
+    TF: Number,
+    JP: Number
+  },
+  result: {                // 测试结果
+    type: String,          // MBTI类型（如INTJ）
+    scores: [Number]       // 四维度百分比得分
+  },
+  startTime: Date,         // 开始时间
+  endTime: Date,           // 结束时间
+  duration: Number,        // 持续时间（秒）
+  isCompleted: Boolean,    // 是否完成
+  isShared: Boolean,       // 是否已分享
+  createdAt: Date,         // 创建时间
+  updatedAt: Date          // 更新时间
+}</code></pre>
+
+                        <h3>PersonalityType集合</h3>
+                        <p>存储16种MBTI人格类型的详细信息。</p>
+                        <pre><code class="language-javascript">{
+  _id: ObjectId,
+  code: String,            // 类型代码（如INTJ）
+  name: String,            // 类型名称（如"建筑师"）
+  description: String,     // 类型描述
+  cognitiveFunctions: [{   // 认知功能栈
+    function: String,      // 功能代码（如Ni）
+    description: String    // 功能描述
+  }],
+  celebrities: [{          // 同类型名人
+    name: String,          // 名人姓名
+    avatar: String,        // 头像URL
+    description: String    // 简介
+  }],
+  createdAt: Date,         // 创建时间
+  updatedAt: Date          // 更新时间
+}</code></pre>
+
+                        <h3>ScenarioAdvice集合</h3>
+                        <p>存储不同场景下的建议内容。</p>
+                        <pre><code class="language-javascript">{
+  _id: ObjectId,
+  typeCode: String,        // MBTI类型代码
+  scenario: String,        // 场景类型（career, relationship, learning）
+  title: String,           // 建议标题
+  content: String,         // 建议内容
+  tips: [String],          // 提示列表
+  createdAt: Date,         // 创建时间
+  updatedAt: Date          // 更新时间
+}</code></pre>
+
+                        <h3>索引设计</h3>
+                        <p>为提高查询性能，系统在以下字段上创建了索引：</p>
+                        <ul>
+                            <li>User集合：openId（唯一索引）</li>
+                            <li>Question集合：dimension, version, order</li>
+                            <li>TestRecord集合：userId, 'result.type', isCompleted, createdAt</li>
+                            <li>PersonalityType集合：code（唯一索引）</li>
+                            <li>ScenarioAdvice集合：typeCode + scenario（复合索引）</li>
+                        </ul>
+                    </section>
+
+                    <section id="api-design" class="doc-section">
+                        <h2>API接口设计</h2>
+                        <p>系统采用RESTful API设计风格，主要接口分为以下几类：</p>
+
+                        <h3>用户相关接口</h3>
+                        <ul>
+                            <li><code>POST /api/user/login</code> - 微信登录</li>
+                            <li><code>GET /api/user/info</code> - 获取用户信息</li>
+                            <li><code>POST /api/user/update</code> - 更新用户信息</li>
+                            <li><code>GET /api/user/history</code> - 获取测试历史</li>
+                            <li><code>POST /api/user/verify</code> - 验证令牌有效性</li>
+                        </ul>
+
+                        <h3>测试相关接口</h3>
+                        <ul>
+                            <li><code>GET /api/test/questions</code> - 获取测试题目</li>
+                            <li><code>POST /api/test/save</code> - 保存测试进度</li>
+                            <li><code>POST /api/test/submit</code> - 提交测试答案</li>
+                            <li><code>GET /api/test/result/:id</code> - 获取测试结果</li>
+                            <li><code>POST /api/test/share</code> - 记录分享行为</li>
+                        </ul>
+
+                        <h3>结果相关接口</h3>
+                        <ul>
+                            <li><code>GET /api/result/type/:code</code> - 获取人格类型详情</li>
+                            <li><code>GET /api/result/advice/:type/:scenario</code> - 获取场景建议</li>
+                            <li><code>GET /api/result/celebrities/:type</code> - 获取同类型名人</li>
+                            <li><code>GET /api/result/types</code> - 获取所有人格类型列表</li>
+                        </ul>
+
+                        <h3>管理后台接口</h3>
+                        <ul>
+                            <li><code>GET /api/admin/stats</code> - 获取数据统计</li>
+                            <li><code>GET /api/admin/questions</code> - 获取题库列表</li>
+                            <li><code>POST /api/admin/questions</code> - 新增/修改题目</li>
+                            <li><code>DELETE /api/admin/questions/:id</code> - 删除题目</li>
+                            <li><code>GET /api/admin/personality-types</code> - 获取人格类型列表</li>
+                            <li><code>POST /api/admin/personality-types</code> - 新增/修改人格类型</li>
+                            <li><code>GET /api/admin/scenario-advice</code> - 获取场景建议列表</li>
+                            <li><code>POST /api/admin/scenario-advice</code> - 新增/修改场景建议</li>
+                        </ul>
+
+                        <p>详细的API文档请参考<a href="api.html">API文档</a>页面。</p>
+                    </section>
+
+                    <section id="security" class="doc-section">
+                        <h2>安全设计</h2>
+                        <p>系统在安全性方面做了以下考虑：</p>
+
+                        <h3>数据传输安全</h3>
+                        <ul>
+                            <li>所有API请求使用HTTPS协议</li>
+                            <li>敏感数据在传输过程中使用SSL/TLS加密</li>
+                            <li>微信登录使用官方安全机制</li>
+                        </ul>
+
+                        <h3>身份验证与授权</h3>
+                        <ul>
+                            <li>使用JWT（JSON Web Token）进行身份验证</li>
+                            <li>令牌设置合理的过期时间（7天）</li>
+                            <li>管理后台接口使用额外的权限验证</li>
+                            <li>敏感操作需要二次验证</li>
+                        </ul>
+
+                        <h3>数据安全</h3>
+                        <ul>
+                            <li>敏感用户数据脱敏存储</li>
+                            <li>定期数据备份</li>
+                            <li>符合GDPR等数据保护法规要求</li>
+                            <li>用户可请求删除个人数据</li>
+                        </ul>
+
+                        <h3>防攻击措施</h3>
+                        <ul>
+                            <li>实现请求频率限制（Rate Limiting）</li>
+             
+(Content truncated due to size limit. Use line ranges to read in chunks)
